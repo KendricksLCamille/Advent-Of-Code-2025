@@ -68,7 +68,6 @@ To play, please identify yourself via one of these services:
 #include "stdlib.h"
 constexpr int UNDER_OVER_FLOW_FIX = 100;
 
-// Assumes that no rotation is greater 99
 int move_within_0_and_100(const int input){
     if(input >= UNDER_OVER_FLOW_FIX) return input % UNDER_OVER_FLOW_FIX;
     auto output = input;
