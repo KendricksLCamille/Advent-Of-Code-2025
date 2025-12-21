@@ -2,6 +2,9 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <string>
+#include <string_view>
+#include <sstream>
 
 /*
 --- Day 2: Gift Shop ---
@@ -40,25 +43,27 @@ Adding up all the invalid IDs in this example produces 1227775554.
 What do you get if you add up all of the invalid IDs?
  */
 
-constexpr bool value_has_duplicate(const size_t value) // example: 1010
+constexpr bool value_has_duplicate(const unsigned long long value) // example: 1010
 {
-    const auto length = static_cast<size_t>(std::floor(std::log10(value))) + 1; // always off by one since the power is one less than the length | 1.010 * 10^3 -> len = 3 + 1 = 4
-    if (length % 2 != 0) return false; // 4 % 2 == 0
-    const auto half = length / 2; // 2
-    const auto shifter = static_cast<size_t>(std::pow(10, half)); // 100
-    const auto top = value / shifter; // 1010 / 100 -> 10
-    const auto bottom = value % shifter; // 1010 % 100 -> 10
-    return top == bottom; // 10 == 10 is true
+    if (value == 0) return false;
+    const auto length = static_cast<unsigned long long>(std::floor(std::log10(static_cast<double>(value)))) + 1;
+    if (length % 2 != 0) return false;
+    const auto half = length / 2;
+    const auto shifter = static_cast<unsigned long long>(std::pow(10, half));
+    const auto top = value / shifter;
+    const auto bottom = value % shifter;
+    return top == bottom;
 }
 
-constexpr void check_string_for_duplicate_value(const std::string& value, auto& invalid_ids)
+void check_range_for_duplicate_value(const std::string& range, std::vector<unsigned long long>& invalid_ids)
 {
-    const auto index = value.find('-');
-    const auto str_left = std::string_view{value.data(), index};
-    const auto str_right = std::string_view{value.data() + index};
+    const auto index = range.find('-');
+    if (index == std::string::npos) return;
+    const auto str_left = range.substr(0, index);
+    const auto str_right = range.substr(index + 1);
 
-    const auto i_left = std::stoul(std::string{str_left});
-    const auto i_right = std::stoul(std::string{str_right});
+    const auto i_left = std::stoull(str_left);
+    const auto i_right = std::stoull(str_right);
     for (auto i = i_left; i <= i_right; i++)
     {
         if (value_has_duplicate(i))
@@ -68,16 +73,21 @@ constexpr void check_string_for_duplicate_value(const std::string& value, auto& 
     }
 }
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 int main(int argc, char** argv)
 {
-    auto invalid_ids = std::vector<size_t>{};
-    for (auto i = 0; i < argc; i++)
+    auto invalid_ids = std::vector<unsigned long long>{};
+    for (int i = 1; i < argc; i++)
     {
-        auto str = std::string{argv[i]};
-        check_string_for_duplicate_value(str, invalid_ids);
+        std::stringstream ss(argv[i]);
+        std::string range;
+        while (std::getline(ss, range, ',')) {
+            if (!range.empty()) {
+                check_range_for_duplicate_value(range, invalid_ids);
+            }
+        }
     }
 
-    const auto sum = std::accumulate(invalid_ids.begin(), invalid_ids.end(), 0uz);
-    std::printf("Sum is %zu", sum);
+    const auto sum = std::accumulate(invalid_ids.begin(), invalid_ids.end(), 0ULL);
+    std::printf("Sum is %llu\n", sum);
+    return 0;
 }
