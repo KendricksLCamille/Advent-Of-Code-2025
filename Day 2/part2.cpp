@@ -42,7 +42,7 @@ Adding up all the invalid IDs in this example produces 1227775554.
 What do you get if you add up all of the invalid IDs?
  */
 
-bool value_has_duplicate(const unsigned long long value) {
+constexpr bool value_has_duplicate(const unsigned long long value) {
     const std::string s = std::to_string(value);
     size_t len = s.length();
 
