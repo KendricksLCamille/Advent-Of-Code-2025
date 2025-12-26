@@ -8,26 +8,36 @@ class Operation{
    * Creates a new operation
    *
    * */
-  constructor(){
+  constructor(size = 0){
     /**
      * The numbers to be operated on
      * @type {number[]}
      * */
-    this.operands = [];
+    this.operands = new Array(size).fill(0);
 
     /**
      * The exact operation being used
      * @type {string}
      * */
     this.operation = null;
+
+    this.part1Mode = size === 0;
   }
 
   /**
    * Adds an operand
    * @param {number} operand - The operand to be added
+   * @param {number} index - The index to set the value, -1 for pushing a new value to the array
    * */
-  addOperand(operand){
-    this.operands.push(operand);
+  addOperand(operand, index = -1){
+    if (index === -1){
+      this.operands.push(operand);
+    }
+    else{
+      this.operands[index] *= 10;
+      this.operands[index] += operand;
+    }
+
   }
 
   /**
@@ -60,7 +70,7 @@ class Operation{
  * @param {string} str - The string to be parsed
  * @returns {Operation[]} - The array of operators
  * */
-function get_operator_array_from_str(str){
+function getOperatorArrayFromStrPart1(str){
   let lines = str.split('\n');
 
   /**@type {Operation[]}*/
@@ -96,7 +106,7 @@ function getOperatorArrayFromStrPart2(str){
   /**@type {Operation[]}*/
   let operators = [];
   const operatorLine = lines.length;
-  let lineLength = lines[0].length;
+  let min_size_of_array = lines[0].length;
 
 
 
@@ -112,7 +122,7 @@ function getOperatorArrayFromStrPart2(str){
  * @param {string} str
  */
 function results(str){
-  const operations = get_operator_array_from_str(str)
+  const operations = getOperatorArrayFromStrPart1(str)
   debugger
   const part1Sum = operations.reduce((acc, curr) => acc + curr.results(), 0);
   output.innerText = "Sum: " + part1Sum + " | ";
